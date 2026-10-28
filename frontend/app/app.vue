@@ -1,12 +1,34 @@
 <script setup lang="ts">
-import type { Note } from '~/types/note'
+import type { VariantId } from '~/types/board-object'
 
-const note = ref<Note>({ x: 120, y: 120, width: 192, height: 192, text: 'Hello, board!' })
-const selected = ref(false)
+const { objects, addObject, updateObject } = useBoard()
+const selectedId = ref<string | null>(null)
+const selectedObject = computed(() => objects.value.find((object) => object.id === selectedId.value))
+
+function create(variant: VariantId, color?: string) {
+  selectedId.value = addObject(variant, color)
+}
+
+useShortcuts(selectedId)
 </script>
 
 <template>
-  <InfiniteCanvas @pointerdown="selected = false">
-    <StickyNote v-model="note" :selected="selected" @select="selected = true" />
+  <InfiniteCanvas @pointerdown="selectedId = null">
+    <BoardObject
+      v-for="object in objects"
+      :key="object.id"
+      :object="object"
+      :selected="selectedId === object.id"
+      @select="selectedId = object.id"
+      @update="updateObject(object.id, $event)"
+    />
+    <ContextBar
+      v-if="selectedObject"
+      class="absolute -translate-y-full -mt-3"
+      :style="{ left: `${selectedObject.x}px`, top: `${selectedObject.y}px` }"
+      :object="selectedObject"
+      @update="updateObject(selectedObject.id, $event)"
+    />
   </InfiniteCanvas>
+  <Toolbar @create="create" />
 </template>
