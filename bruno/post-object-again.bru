@@ -1,0 +1,21 @@
+meta {
+  name: POST object again
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:3001/objects
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "bruno-test"
+  }
+}
+
+assert {
+  res.status: eq 409
+}

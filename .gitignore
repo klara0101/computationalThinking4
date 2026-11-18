@@ -8,3 +8,6 @@ dist
 
 # Lecture notes (local only)
 lecture/
+
+backend/data/board.json
+backend/data/board.json.tmp

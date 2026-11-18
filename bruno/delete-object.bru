@@ -1,0 +1,15 @@
+meta {
+  name: DELETE object
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:3001/objects/bruno-test
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 204
+}

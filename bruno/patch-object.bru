@@ -1,0 +1,22 @@
+meta {
+  name: PATCH object
+  type: http
+  seq: 4
+}
+
+patch {
+  url: http://localhost:3001/objects/bruno-test
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "x": 200
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.x: eq 200
+}
