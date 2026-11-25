@@ -1,12 +1,15 @@
 info:
   name: Update object
   type: http
-  seq: 3
+  seq: 6
 
 http:
   method: PATCH
-  url: http://localhost:3001/objects/:id
+  url: http://localhost:3001/boards/:boardId/objects/:id
   params:
+    - name: boardId
+      value: board-from-bruno
+      type: path
     - name: id
       value: note-from-bruno
       type: path

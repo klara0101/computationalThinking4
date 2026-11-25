@@ -19,17 +19,19 @@ const pendingChanges = new Map<string, { changes: ObjectChanges; timer: ReturnTy
 // The board state is the single source of truth for which objects exist and what they look like.
 // Components only read it; every change goes through one of the functions below,
 // which update the state right away and then tell the backend.
+// It always holds the objects of the board whose id is in the URL.
 export function useBoard() {
-  const api = $fetch.create({ baseURL: useRuntimeConfig().public.apiBase })
+  const api = useApi()
+  const base = `/boards/${useRoute().params.id}/objects`
   const objects = useState<BoardObject[]>('objects', () => [])
 
   async function load() {
-    objects.value = await api<BoardObject[]>('/objects')
+    objects.value = await api<BoardObject[]>(base)
   }
 
   function insert(object: BoardObject) {
     objects.value = [...objects.value, object]
-    api('/objects', { method: 'POST', body: object })
+    api(base, { method: 'POST', body: object })
   }
 
   function addObject(template: ObjectTemplate, centerX: number, centerY: number) {
@@ -52,7 +54,7 @@ export function useBoard() {
     clearTimeout(pendingChanges.get(id)?.timer)
     pendingChanges.delete(id)
     objects.value = objects.value.filter(object => object.id !== id)
-    api(`/objects/${id}`, { method: 'DELETE' })
+    api(`${base}/${id}`, { method: 'DELETE' })
   }
 
   function updateObject(id: string, changes: ObjectChanges) {
@@ -67,7 +69,7 @@ export function useBoard() {
     const merged = { ...pending?.changes, ...changes }
     const timer = setTimeout(() => {
       pendingChanges.delete(id)
-      api(`/objects/${id}`, { method: 'PATCH', body: merged })
+      api(`${base}/${id}`, { method: 'PATCH', body: merged })
     }, SAVE_DELAY)
     pendingChanges.set(id, { changes: merged, timer })
   }
